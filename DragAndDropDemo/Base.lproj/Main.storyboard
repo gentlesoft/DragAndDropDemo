@@ -25,7 +25,7 @@
         <!--Table View Controller-->
         <scene sceneID="Xfy-RV-bFK">
             <objects>
-                <tableViewController id="t4q-c3-8w7" customClass="TableViewController" customModule="TodoDemo" customModuleProvider="target" sceneMemberID="viewController">
+                <tableViewController id="t4q-c3-8w7" customClass="TableViewController" customModule="DragAndDropDemo" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="default" rowHeight="-1" sectionHeaderHeight="18" sectionFooterHeight="18" id="ovE-ee-uyy">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -110,7 +110,7 @@
         <!--Table View Controller-->
         <scene sceneID="Rld-vJ-gOd">
             <objects>
-                <tableViewController id="6Q7-RQ-bdD" customClass="TableViewController" customModule="TodoDemo" customModuleProvider="target" sceneMemberID="viewController">
+                <tableViewController id="6Q7-RQ-bdD" customClass="TableViewController" customModule="DragAndDropDemo" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="default" rowHeight="-1" sectionHeaderHeight="18" sectionFooterHeight="18" id="NMr-Cs-l3V">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>

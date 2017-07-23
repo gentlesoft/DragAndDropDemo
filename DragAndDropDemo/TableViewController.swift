@@ -1,6 +1,6 @@
 //
 //  TableViewController.swift
-//  TodoDemo
+//  DragAndDropDemo
 //
 //  Created by gentle on 2017/07/20.
 //  Copyright © 2017年 gentlesoft. All rights reserved.
@@ -25,7 +25,7 @@ class TableViewController: UITableViewController {
             navigationItem.leftBarButtonItem = splitViewController?.displayModeButtonItem
         }
         if !isTop {
-            self.title = TodoData.shared.text(indexes: parents)
+            self.title = DemoData.shared.text(indexes: parents)
         }
         
         tableView.dragDelegate = self
@@ -47,14 +47,14 @@ class TableViewController: UITableViewController {
         if !isMaster && isTop {
             return 0
         } else {
-            return TodoData.shared.count(indexes: parents) + 1
+            return DemoData.shared.count(indexes: parents) + 1
         }
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if indexPath.row < TodoData.shared.count(indexes: parents) {
+        if indexPath.row < DemoData.shared.count(indexes: parents) {
             let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
-            cell.textLabel?.text = TodoData.shared.text(indexes: parents + [indexPath.row])
+            cell.textLabel?.text = DemoData.shared.text(indexes: parents + [indexPath.row])
             return cell
         } else {
             return tableView.dequeueReusableCell(withIdentifier: "inputCell", for: indexPath)
@@ -63,7 +63,7 @@ class TableViewController: UITableViewController {
 
     // Override to support conditional editing of the table view.
     override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-        return indexPath.row < TodoData.shared.count(indexes: parents)
+        return indexPath.row < DemoData.shared.count(indexes: parents)
     }
 
     // Override to support editing the table view.
@@ -71,13 +71,13 @@ class TableViewController: UITableViewController {
         if editingStyle == .delete {
             tableView.beginUpdates()
             tableView.deleteRows(at: [indexPath], with: .fade)
-            TodoData.shared.remove(at: parents + [indexPath.row])
+            DemoData.shared.remove(at: parents + [indexPath.row])
             tableView.endUpdates()
         }
     }
     
     override func tableView(_ tableView: UITableView, shouldSpringLoadRowAt indexPath: IndexPath, with context: UISpringLoadedInteractionContext) -> Bool {
-        return indexPath.row < TodoData.shared.count(indexes: parents)
+        return indexPath.row < DemoData.shared.count(indexes: parents)
     }
 
     /*
@@ -125,8 +125,8 @@ extension TableViewController: UITextFieldDelegate {
         textField.text = nil
         tableView.beginUpdates()
         
-        TodoData.shared.append(text: text, parents: parents)
-        tableView.insertRows(at: [IndexPath(row: TodoData.shared.count(indexes: parents) - 1, section: 0)], with: .automatic)
+        DemoData.shared.append(text: text, parents: parents)
+        tableView.insertRows(at: [IndexPath(row: DemoData.shared.count(indexes: parents) - 1, section: 0)], with: .automatic)
         
         tableView.endUpdates()
     }
@@ -158,20 +158,20 @@ extension TableViewController: UITableViewDropDelegate {
         for item in coordinator.items {
             if let sourceIndexPath = item.sourceIndexPath {
                 tableView.moveRow(at: sourceIndexPath, to: indexPath)
-                TodoData.shared.insert(text: TodoData.shared.text(indexes: parents + [sourceIndexPath.row]),
+                DemoData.shared.insert(text: DemoData.shared.text(indexes: parents + [sourceIndexPath.row]),
                                        at: indexPath.row,
                                        parents: parents)
-                TodoData.shared.remove(at: parents + [sourceIndexPath.row])
+                DemoData.shared.remove(at: parents + [sourceIndexPath.row])
 
             } else if let (indexes, sourceTableView) = item.dragItem.localObject as? ([Int], UITableView) {
                 guard parents != indexes else { return }
                 
-                let index = indexPath.row + (indexPath.row > 0 && indexPath.row >= TodoData.shared.count(indexes: parents) ? -1 : 0)
-                TodoData.shared.insert(text: TodoData.shared.text(indexes: indexes),
+                let index = indexPath.row + (indexPath.row > 0 && indexPath.row >= DemoData.shared.count(indexes: parents) ? -1 : 0)
+                DemoData.shared.insert(text: DemoData.shared.text(indexes: indexes),
                                        at: index,
                                        parents: parents)
                 tableView.insertRows(at: [indexPath], with: .automatic)
-                TodoData.shared.remove(at: indexes)
+                DemoData.shared.remove(at: indexes)
                 sourceTableView.reloadSections(IndexSet(integer: 0), with: .automatic)
                 
             } else {
@@ -188,7 +188,7 @@ extension TableViewController: UITableViewDropDelegate {
                     Thread.sleep(forTimeInterval: 1)
                     DispatchQueue.main.async {
                         placeholder.commitInsertion(dataSourceUpdates: { (indexPath) in
-                            TodoData.shared.insert(text: text as String,
+                            DemoData.shared.insert(text: text as String,
                                                    at: indexPath.row,
                                                    parents: wself.parents)
                         })
