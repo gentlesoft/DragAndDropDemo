@@ -27,10 +27,12 @@ class TableViewController: UITableViewController {
         if !isTop {
             self.title = DemoData.shared.text(indexes: parents)
         }
-        
-        tableView.dragDelegate = self
-        tableView.dropDelegate = self
-        tableView.isSpringLoaded = true
+
+// 1. Drag
+//        tableView.dragDelegate = self
+// 2. Drop
+//        tableView.dropDelegate = self
+//        tableView.isSpringLoaded = true
     }
 
     override func didReceiveMemoryWarning() {
@@ -132,70 +134,77 @@ extension TableViewController: UITextFieldDelegate {
     }
 }
 
-extension TableViewController: UITableViewDragDelegate {
-    func tableView(_ tableView: UITableView, itemsForBeginning session: UIDragSession, at indexPath: IndexPath) -> [UIDragItem] {
-        guard let text = tableView.cellForRow(at: indexPath)?.textLabel?.text else { return [] }
-        let dragItem = UIDragItem(itemProvider: NSItemProvider(object: text as NSString))
-        dragItem.localObject = (indexes: (parents + [indexPath.row]), tableView: tableView)
-        return [dragItem]
-    }
-}
+// 1. Drag
+//extension TableViewController: UITableViewDragDelegate {
+//    func tableView(_ tableView: UITableView, itemsForBeginning session: UIDragSession, at indexPath: IndexPath) -> [UIDragItem] {
+//        guard let text = tableView.cellForRow(at: indexPath)?.textLabel?.text else { return [] }
+//        let dragItem = UIDragItem(itemProvider: NSItemProvider(object: text as NSString))
+//        dragItem.localObject = (indexes: (parents + [indexPath.row]), tableView: tableView)
+//        return [dragItem]
+//    }
+//}
 
-extension TableViewController: UITableViewDropDelegate {
-    func tableView(_ tableView: UITableView, dropSessionDidUpdate session: UIDropSession, withDestinationIndexPath destinationIndexPath: IndexPath?) -> UITableViewDropProposal {
-        if let _ = session.localDragSession {
-            return UITableViewDropProposal(operation: .move, intent: .insertAtDestinationIndexPath)
-        } else {
-            return UITableViewDropProposal(operation: .copy)
-        }
-    }
-    
-    func tableView(_ tableView: UITableView, performDropWith coordinator: UITableViewDropCoordinator) {
-        guard let indexPath = coordinator.destinationIndexPath else { return }
-        
-        tableView.beginUpdates()
-        
-        for item in coordinator.items {
-            if let sourceIndexPath = item.sourceIndexPath {
-                tableView.moveRow(at: sourceIndexPath, to: indexPath)
-                DemoData.shared.insert(text: DemoData.shared.text(indexes: parents + [sourceIndexPath.row]),
-                                       at: indexPath.row,
-                                       parents: parents)
-                DemoData.shared.remove(at: parents + [sourceIndexPath.row])
+// 2. Drop
+//extension TableViewController: UITableViewDropDelegate {
+//    func tableView(_ tableView: UITableView, dropSessionDidUpdate session: UIDropSession, withDestinationIndexPath destinationIndexPath: IndexPath?) -> UITableViewDropProposal {
+//        if let _ = session.localDragSession {
+//            return UITableViewDropProposal(operation: .move,
+//                                           intent: .insertAtDestinationIndexPath)
+//        } else {
+//            return UITableViewDropProposal(operation: .copy)
+//        }
+//    }
+//
+//    func tableView(_ tableView: UITableView, performDropWith coordinator: UITableViewDropCoordinator) {
+//        guard let indexPath = coordinator.destinationIndexPath else { return }
+//
+//        tableView.beginUpdates()
+//
+//        for item in coordinator.items {
+//            if let sourceIndexPath = item.sourceIndexPath {
+//// 2. Move in TableView
+////                tableView.moveRow(at: sourceIndexPath, to: indexPath)
+////                DemoData.shared.insert(text: DemoData.shared.text(indexes: parents + [sourceIndexPath.row]),
+////                                       at: indexPath.row,
+////                                       parents: parents)
+////                DemoData.shared.remove(at: parents + [sourceIndexPath.row])
+//
+//            } else if let (indexes, sourceTableView) = item.dragItem.localObject as? ([Int], UITableView) {
+//// 3. Move to Othore TableView (same App)
+////                guard parents != indexes else { return }
+////
+////                let index = indexPath.row + (indexPath.row > 0 && indexPath.row >= DemoData.shared.count(indexes: parents) ? -1 : 0)
+////                DemoData.shared.insert(text: DemoData.shared.text(indexes: indexes),
+////                                       at: index,
+////                                       parents: parents)
+////                tableView.insertRows(at: [indexPath], with: .automatic)
+////                DemoData.shared.remove(at: indexes)
+////                sourceTableView.reloadSections(IndexSet(integer: 0), with: .automatic)
+//
+//            } else {
+//// 4. Copy from Othre App
+////                guard item.dragItem.itemProvider.canLoadObject(ofClass: NSString.self) else { return }
+////                let placeholder = coordinator.drop(item.dragItem, toPlaceholderInsertedAt: indexPath, withReuseIdentifier: "cell", rowHeight: tableView.rowHeight, cellUpdateHandler: { (cell) in
+////                    cell.textLabel?.text = "..."
+////                })
+////                item.dragItem.itemProvider.loadObject(ofClass: NSString.self) { [weak self] (obj, _) in
+////                    guard let wself = self,
+////                        let text = obj as? NSString else {
+////                            placeholder.deletePlaceholder()
+////                            return
+////                        }
+////                    Thread.sleep(forTimeInterval: 1)
+////                    DispatchQueue.main.async {
+////                        placeholder.commitInsertion(dataSourceUpdates: { (indexPath) in
+////                            DemoData.shared.insert(text: text as String,
+////                                                   at: indexPath.row,
+////                                                   parents: wself.parents)
+////                        })
+////                    }
+////                }
+//            }
+//        }
+//        tableView.endUpdates()
+//    }
+//}
 
-            } else if let (indexes, sourceTableView) = item.dragItem.localObject as? ([Int], UITableView) {
-                guard parents != indexes else { return }
-                
-                let index = indexPath.row + (indexPath.row > 0 && indexPath.row >= DemoData.shared.count(indexes: parents) ? -1 : 0)
-                DemoData.shared.insert(text: DemoData.shared.text(indexes: indexes),
-                                       at: index,
-                                       parents: parents)
-                tableView.insertRows(at: [indexPath], with: .automatic)
-                DemoData.shared.remove(at: indexes)
-                sourceTableView.reloadSections(IndexSet(integer: 0), with: .automatic)
-                
-            } else {
-                guard item.dragItem.itemProvider.canLoadObject(ofClass: NSString.self) else { return }
-                let placeholder = coordinator.drop(item.dragItem, toPlaceholderInsertedAt: indexPath, withReuseIdentifier: "cell", rowHeight: tableView.rowHeight, cellUpdateHandler: { (cell) in
-                    cell.textLabel?.text = "..."
-                })
-                item.dragItem.itemProvider.loadObject(ofClass: NSString.self) { [weak self] (obj, _) in
-                    guard let wself = self,
-                        let text = obj as? NSString else {
-                            placeholder.deletePlaceholder()
-                            return
-                        }
-                    Thread.sleep(forTimeInterval: 1)
-                    DispatchQueue.main.async {
-                        placeholder.commitInsertion(dataSourceUpdates: { (indexPath) in
-                            DemoData.shared.insert(text: text as String,
-                                                   at: indexPath.row,
-                                                   parents: wself.parents)
-                        })
-                    }
-                }
-            }
-        }
-        tableView.endUpdates()
-    }
-}
